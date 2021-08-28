@@ -1,0 +1,17 @@
+﻿@page "/"
+@using System.ComponentModel
+@using basicblazorexample.API
+@using Flurl.Http; 
+@using SharedAssemblies2.Models
+
+<div id="2" class="aa">
+    <DynObject Behavior=@SubmitNewName() ></DynObject>
+</div>
+
+@code{
+
+    public Action<DynObject> SubmitNewName() =>
+        async (self) =>
+                await NameMethods.AddName(new Name {Value = "Landan"})
+                    .ContinueWith(a => self.StateChanged());
+}

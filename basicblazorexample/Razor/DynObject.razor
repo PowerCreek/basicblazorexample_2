@@ -1,0 +1,26 @@
+﻿<div @onmousedown=@PerformSubmitNewName>
+    @HTML
+</div>
+
+@code {
+
+    [Parameter]
+    public string HTML { get; set; } = "test";
+    
+    [Parameter]
+    public Action<DynObject> Behavior { get; set; }
+
+    public void PerformSubmitNewName()
+    {
+        Behavior(this);
+    }
+    
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    public Action StateChanged => StateHasChanged;
+
+}

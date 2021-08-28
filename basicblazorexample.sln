@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "basicblazorexample", "basicblazorexample\basicblazorexample.csproj", "{D82965AF-4A8A-4815-BAF6-9B8D0EEE0BEA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "basicblazorexamplewebapp", "basicblazorexamplewebapp\basicblazorexamplewebapp.csproj", "{ABDE69A9-328D-4B5A-BABC-0D1CDCB8DD91}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedAssemblies2", "SharedAssemblies2\SharedAssemblies2.csproj", "{4AE2844C-2EA2-42A5-A47A-61F8D199EA56}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D82965AF-4A8A-4815-BAF6-9B8D0EEE0BEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D82965AF-4A8A-4815-BAF6-9B8D0EEE0BEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D82965AF-4A8A-4815-BAF6-9B8D0EEE0BEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D82965AF-4A8A-4815-BAF6-9B8D0EEE0BEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABDE69A9-328D-4B5A-BABC-0D1CDCB8DD91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABDE69A9-328D-4B5A-BABC-0D1CDCB8DD91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABDE69A9-328D-4B5A-BABC-0D1CDCB8DD91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABDE69A9-328D-4B5A-BABC-0D1CDCB8DD91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AE2844C-2EA2-42A5-A47A-61F8D199EA56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AE2844C-2EA2-42A5-A47A-61F8D199EA56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AE2844C-2EA2-42A5-A47A-61F8D199EA56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AE2844C-2EA2-42A5-A47A-61F8D199EA56}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
