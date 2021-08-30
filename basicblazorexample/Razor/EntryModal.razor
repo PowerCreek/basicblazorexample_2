@@ -1,0 +1,24 @@
+﻿@inherits SourceElement
+
+<div class="entry-modal" style=@($"display: {GetDisplayed}")>
+    <div class="fill" onmousedown=@TriggerHide></div>
+    @RenderContent
+</div>
+
+@code {
+
+    public bool Displayed { get; set; } = false;
+
+    public string GetDisplayed => Displayed ? "grid" : "none";
+
+    public RenderFragment RenderContent { get; set; } =
+        @<div></div>;
+
+    public Action TriggerHide { get; set; } = () => { };
+    
+    public void Show(bool show)
+    {
+        Displayed = show;
+    }
+
+}

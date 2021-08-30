@@ -1,0 +1,11 @@
+﻿<div class="button" onmousedown=@OnButton>
+    @HTML
+</div>
+
+@code {
+    [Parameter]
+    public string HTML { get; set; }
+
+    [Parameter]
+    public Action OnButton { get; set; } = () => { Console.WriteLine("button down"); };
+}

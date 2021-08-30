@@ -1,0 +1,21 @@
+﻿<div class="table-entry">
+    <div class="entry-content">@Content</div>
+    <ConfiguredButton OnButton=@DoRemoveButtonClick HTML="X"></ConfiguredButton>
+</div>
+
+@code {
+    [Parameter]
+    public string Content { get; set; } = "no name";
+
+    [Parameter]
+    public string Id { get; set; } = "no id";
+    
+    [Parameter]
+    public Action<string> OnRemoveButtonClick { get; set; } = (_) => { };
+
+    public void DoRemoveButtonClick()
+    {
+        OnRemoveButtonClick(Id);
+    }
+    
+}

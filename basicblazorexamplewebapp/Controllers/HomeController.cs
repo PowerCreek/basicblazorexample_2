@@ -10,8 +10,11 @@ using basicblazorexamplewebapp.DBRepo;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SharedAssemblies2;
 using SharedAssemblies2.Models;
+using Name = SharedAssemblies2.Models.Name;
 
 namespace basicblazorexamplewebapp.Controllers
 {
@@ -152,12 +155,13 @@ namespace basicblazorexamplewebapp.Controllers
         }
         
         // Post
-        [HttpPost("/names")]
+        [HttpPost("/namesadd")]
         public async Task<IActionResult> NamesAddPost([FromForm] Name name, [FromServices] MasterDBContext ctx) =>
             await OnNameAdd(name, ctx)
             .ContinueWith(e => Ok("test"));
         
-        [HttpGet("/names")]
+        
+        [HttpGet("/namesadd")]
         public async Task<IActionResult> NamesAddGet([FromQuery] Name name, [FromServices] MasterDBContext ctx) =>
             await OnNameAdd(name, ctx)
                 .ContinueWith(e => Ok("test"));
@@ -171,33 +175,61 @@ namespace basicblazorexamplewebapp.Controllers
         }
 
         [HttpGet("/fetchnames")]
-        public async Task<dynamic[]> GetFetchNames([FromServices] MasterDBContext ctx, [FromQuery] int page, int count) => 
-            FetchItems(ctx.Names, page, count ).Select(e=>
-                (dynamic) new
-                    {
-                        e.Guid,
-                        e.Instance.Value,
-                    } 
-                ).ToArray();
-        
-        [HttpPost("/fetchnames")]
-        public async Task<object[]> PostFetchNames([FromServices] MasterDBContext ctx, [FromForm] int page, int count) => 
-            FetchItems(ctx.Names, page, count ).Select(e=>
-                (dynamic) new
+        public async Task<string> GetFetchNames([FromServices] MasterDBContext ctx, [FromBody] string jpaging)
+        {
+            Console.WriteLine(jpaging);
+            
+            Paging paging = JsonConvert.DeserializeObject<Paging>(jpaging.ToString());
+            
+            Console.WriteLine(paging.Page +":"+ paging.Interval);
+            
+            return JsonConvert.SerializeObject(FetchItems(ctx.Names, paging.Page, paging.Interval).Select(e =>
                 {
-                    e.Guid,
-                    e.Instance.Value,
-                } 
-            ).ToArray();
+                    Console.WriteLine(e.Guid+":"+e.Instance.Value);
+                    
+                    return (GuidInstance) new()
+                    {
+                        Guid = (Guid) e.Guid,
+                        Value = (string) e.Instance.Value,
+                    };
+                }
+            ).ToArray());  
+        } 
+
+
+        [HttpPost("/fetchnames")]
+        public async Task<string> PostFetchNames([FromServices] MasterDBContext ctx, [FromBody] string jpaging)
+        {
+            Console.WriteLine(jpaging);
+            
+            Paging paging = JsonConvert.DeserializeObject<Paging>(jpaging.ToString());
+            
+            Console.WriteLine(paging.Page +":"+ paging.Interval);
+            
+            return JsonConvert.SerializeObject(FetchItems(ctx.Names, paging.Page, paging.Interval).Select(e =>
+                {
+                    Console.WriteLine(e.Guid+":"+e.Instance.Value);
+                    
+                    return (GuidInstance) new()
+                    {
+                        Guid = (Guid) e.Guid,
+                        Value = (string) e.Instance.Value,
+                    };
+                }
+            ).ToArray());  
+        } 
 
         
         [HttpGet("/removenames")]
         public async Task<string> GetRemoveNames([FromServices] MasterDBContext ctx, [FromQuery] string guid)
         => await RemoveNames(ctx, guid) ? "removed" : "not found";
         
-        [HttpPost("/removenames")]
-        public async Task<string> PostRemoveNames([FromServices] MasterDBContext ctx, [FromForm] string guid)
-        => await RemoveNames(ctx, guid) ? "removed" : "not found";
         
+        [HttpPost("/removenames")]
+        public async Task<string> PostRemoveNames([FromServices] MasterDBContext ctx, [FromForm] string Guid)
+        {
+            Console.WriteLine("guid: "+Guid);
+            return await RemoveNames(ctx, Guid) ? "removed" : "not found";
+        }
     }
 }

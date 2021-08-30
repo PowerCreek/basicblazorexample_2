@@ -1,17 +1,123 @@
 ﻿@page "/"
-@using System.ComponentModel
 @using basicblazorexample.API
-@using Flurl.Http; 
-@using SharedAssemblies2.Models
 
-<div id="2" class="aa">
-    <DynObject Behavior=@SubmitNewName() ></DynObject>
+<div id="sheet" class="body-space">
+    @DisplaySheet()
 </div>
 
 @code{
+    public Action<object> Capture<T>(Action<T> act)=>(a) => act((T) a);
+    
+    public RenderFragment DisplaySheet()
+    {
+        void CapAct(DynObject obj)
+        {
+            int page = 0;
+            int interval = 5;
 
-    public Action<DynObject> SubmitNewName() =>
-        async (self) =>
-                await NameMethods.AddName(new Name {Value = "Landan"})
-                    .ContinueWith(a => self.StateChanged());
+            async void OnRemoveButtonClick(string id)
+            {
+                Console.WriteLine(id);
+
+                if (!await NameMethods.RemoveName(id))
+                {
+                    Console.WriteLine("could not remove");
+                }
+
+                if (obj.TableData.Count == 1 && page > 0)
+                {
+                    page -= 1;
+                }
+                var hold = await NameMethods.GetNameInstances(page, interval);
+                
+                obj.TableData.Clear();
+                obj.TableData.AddRange(hold);
+                obj.StateChanged();
+            }
+
+            obj.MakeWrapper = (content, id) => 
+                @<TableEntry Id=@id OnRemoveButtonClick=@((Action<string>) OnRemoveButtonClick) Content=@content/>;
+
+            EntryModal modalRef = null;
+            
+            void ModalCapture(EntryModal modal)
+            {
+                modalRef = modal;
+                
+                modal.TriggerHide += () =>
+                {
+                    modal.Show(false);
+                    modal.StateChanged();
+                };
+
+                void NamePanelCapture(NameAddPanel panel)
+                {
+                    panel.OnSubmitButtonClick += () =>
+                    {
+                        NameMethods.GetNameInstances(page, interval).ContinueWith(e =>
+                        {
+                            obj.TableData.Clear();
+                            obj.TableData.AddRange(e.Result);
+                            obj.StateChanged();
+                        });
+                    };
+                }
+
+                modal.RenderContent = @<NameAddPanel Capture=@Capture((Action<NameAddPanel>)NamePanelCapture)/>;
+            }
+            
+            obj.EntryModalInstance += () =>
+            {
+                return @<EntryModal Capture=@Capture((Action<EntryModal>) ModalCapture)/>;
+            };
+
+            void DoModalAction()
+            {
+                modalRef.Show(!modalRef.Displayed);
+                obj.StateChanged();
+            }
+            
+            obj.AddConfigurationButton(@<ConfiguredButton OnButton=@((Action) DoModalAction)
+                                            HTML="Add Entry"/>);
+
+            obj.LeftNavAction += async () =>
+            {
+                if (page <= 0) return;
+                page--;
+                
+                var hold = await NameMethods.GetNameInstances(page, interval);
+                obj.TableData.Clear();
+                obj.TableData.AddRange(hold);
+                obj.StateChanged();
+            };
+            
+            obj.RightNavAction += async () =>
+            {
+                page++;
+                var hold = await NameMethods.GetNameInstances(page, interval);
+                if (hold.Length == 0)
+                {
+                    page--;
+                }
+                
+                hold = await NameMethods.GetNameInstances(page, interval);
+                obj.TableData.Clear();
+                obj.TableData.AddRange(hold);
+                obj.StateChanged();
+            };
+    //
+            NameMethods.GetNameInstances(0, 5).ContinueWith(e =>
+            {
+                obj.TableData.Clear();
+                foreach(var item in e.Result)
+                {
+                    obj.TableData.Add(item);
+                }
+                obj.StateChanged();
+            });
+        }
+
+        return 
+            @<DynObject Capture=@Capture((Action<DynObject>) CapAct)/>;
+    }
 }

@@ -1,0 +1,32 @@
+﻿@using basicblazorexample.API
+@using SharedAssemblies2.Models
+@inherits SourceElement
+
+<div>
+    <div class="modal-title">Add new name</div>
+    <input @bind="InputValue" @bind:event="oninput" onkeydown=@OnKeyDown placeholder="enter name here"/>
+    <ConfiguredButton OnButton=@DoSubmitButtonClick HTML="Submit"/>
+</div>
+
+@code{
+
+    public string InputValue { get; set; } = "";
+
+    public Action<KeyboardEventArgs> OnKeyDown => (args) =>
+    {
+        if (args.Key == "Enter") DoSubmitButtonClick();
+    };
+
+    public Action OnSubmitButtonClick { get; set; } = () => { };
+
+    public void DoSubmitButtonClick()
+    {
+        if (string.IsNullOrEmpty(InputValue)) return;
+        
+        string hold = InputValue;
+        InputValue = "";
+        NameMethods.AddName(new Name() {Value = hold}).ContinueWith(
+            e=> OnSubmitButtonClick());
+        
+    }
+}

@@ -1,26 +1,80 @@
-﻿<div @onmousedown=@PerformSubmitNewName>
-    @HTML
+﻿@using Microsoft.AspNetCore.Components.Rendering
+@using SharedAssemblies2.Models
+
+@inherits SourceElement
+
+@EntryModalInstance.Invoke()
+
+<div class="button-row">
+    @foreach (var item in ConfigurationButtons)
+    {
+        @item;
+    }
+</div>
+<div class="table-type-a">
+    @{
+        var items = GetTableElements();
+        var hold = items.ToArray();
+        foreach(var item in hold)
+        {
+            @item;
+        }
+        for (int i = 0; i < 6-hold.Length; i++)
+        {
+            @((RenderFragment) (@<div class="table-entry soft">
+                                    <div class="entry-content"></div>
+                                    <div class="button">X</div>
+                                    </div>));
+        }
+    }
+</div>
+<div class="table-nav">
+    <ConfiguredButton HTML="left" OnButton="@LeftNavAction"/>
+    <ConfiguredButton HTML="right" OnButton="@RightNavAction"/>
 </div>
 
 @code {
-
-    [Parameter]
-    public string HTML { get; set; } = "test";
+    
+    
     
     [Parameter]
-    public Action<DynObject> Behavior { get; set; }
+    public string HTML { get; set; } = "";
 
-    public void PerformSubmitNewName()
+    public DynObject()
     {
-        Behavior(this);
+    }
+
+    [Parameter]
+    public List<RenderFragment> ConfigurationButtons { get; set; } = new();
+    
+    public void AddConfigurationButton(RenderFragment frag)
+    {
+        ConfigurationButtons.Add(frag);
+        StateChanged();
     }
     
+    public List<GuidInstance> TableData { get; set; } = new();
 
-    protected override void OnInitialized()
+    public Action RightNavAction { get; set; } = () => { };
+    public Action LeftNavAction { get; set; } = () => { };
+    
+    public Func<string, string, RenderFragment> MakeWrapper { get; set; } = (content, key)=> @<div>@content</div>;
+    
+    public Func<RenderFragment> EntryModalInstance { get; set; } = ()=> 
+        @<div></div>;
+    
+    public IEnumerable<RenderFragment> GetTableElements()
     {
-        base.OnInitialized();
+        foreach (var item in TableData)
+        {
+            yield return MakeWrapper(item.Value, item.Guid.ToString());
+        }
+        yield return null;
     }
 
-    public Action StateChanged => StateHasChanged;
+    public void AddTableElements(RenderFragment frag)
+    {
+        StateChanged();
+    }
 
 }

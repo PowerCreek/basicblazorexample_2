@@ -1,0 +1,13 @@
+﻿
+@code {
+    public Action StateChanged => StateHasChanged;
+    
+    [Parameter]
+    public Action<object> Capture { get; set; }
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Capture?.Invoke(this);
+    }
+}
